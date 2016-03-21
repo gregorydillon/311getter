@@ -5,6 +5,7 @@ var moment = require('moment')
   , split2 = require('split2')
   , through2 = require('through2')
   , nodemailer = require('nodemailer')
+  , csv = require('csv-streamify')
   ;
 
 require('request-debug')(request);
@@ -15,6 +16,8 @@ var sourceLimit = 600000;
 
 var days = process.argv[2]
   , savePath = process.argv[3];
+
+var outputFile = fs.createWriteStream(savePath);
 
 var rowCount = 0;
 
@@ -49,25 +52,45 @@ var options = {
   url: sourceURL
 }
 
-//transform function, finds all timestamps and converts them to GMT
-var transform = through2(function(chunk, encoding, cb) {
-  rowCount++;
+// //transform function, finds all timestamps and converts them to GMT
+// var transform = through2({objectMode: true}, function(chunk, encoding, cb) {
+//   rowCount++;
 
-  chunk = chunk.toString();
+//   chunk = chunk.toString();
 
-  chunk = chunk.replace(/(\d{4}\-\d\d\-\d\d[tT][\d:\.]*)/g, function(match) {
+//   chunk = chunk.replace(/(\d{4}\-\d\d\-\d\d[tT][\d:\.]*)/g, function(match) {
+//     var newTime = shiftTime(match);
+//     return shiftTime(match);
+//   });
+
+//   //re-add the newline character
+//   chunk += '\n';
+
+//   this.push(chunk)
+
+//   cb();
+// })
+
+parser = csv({ columns: true });
+
+parser.on('data', function (line) {
+  line = line.toString();
+
+  console.log(line);
+
+  line = line.replace(/(\d{4}\-\d\d\-\d\d[tT][\d:\.]*)/g, function(match) {
     var newTime = shiftTime(match);
     return shiftTime(match);
   });
 
-  //re-add the newline character
-  chunk += '\n';
+  line += '\n';
 
-  cb(null, chunk);
-})
-  .on('error', function(err) {
-  console.log(err, err.toString());
+
+  outputFile.write(line);
+
+
 });
+
 
 //GET the API call and pipe it to the response
 request.get(sourceURL)
@@ -84,9 +107,10 @@ request.get(sourceURL)
       })
     )
   })
-  .pipe(split2(), {end: false})
-  .pipe(transform)
-  .pipe(fs.createWriteStream(savePath))
+  // .pipe(split2(), {end: false})
+  // .pipe(transform)
+  // .pipe(fs.createWriteStream(savePath))
+  .pipe(parser)
 
 
 //shift time to GMT
