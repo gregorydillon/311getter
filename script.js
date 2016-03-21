@@ -102,25 +102,36 @@ parser.on('data', function (line) {
 });
 
 
+var options = {
+  url: sourceURL,
+  headers: {
+    'Accept': '*/*',
+    'User-Agent': 'curl/7.43.0'
+  }
+}
+
 //GET the API call and pipe it to the response
-request.get(sourceURL)
-  .on('response', function(response) {
-    console.log(response.statusCode);
-    console.log(response.headers);
-  })
-  .on('end', function() {
-    console.log('Done-zo, sending an email');
-    sendNotification(
-      Mustache.render('The 311 script ran, saved {{rowCount}} rows to {{savePath}}', {
-        rowCount: rowCount,
-        savePath: savePath
+request.get(options)
+  // .on('response', function(response) {
+  //   console.log(response.statusCode);
+  //   console.log(response.headers);
+  // })
+  // .on('end', function() {
+  //   console.log('Done-zo, sending an email');
+  //   sendNotification(
+  //     Mustache.render('The 311 script ran, saved {{rowCount}} rows to {{savePath}}', {
+  //       rowCount: rowCount,
+  //       savePath: savePath
+  //     })
+  //   )
+  // })
+      .on('error', function(err) {
+        console.log(err);
       })
-    )
-  })
   // .pipe(split2(), {end: false})
   // .pipe(transform)
-  // .pipe(fs.createWriteStream(savePath))
-  .pipe(parser)
+   .pipe(fs.createWriteStream(savePath))
+  //.pipe(parser)
 
 
 //shift time to GMT
