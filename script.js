@@ -71,22 +71,32 @@ var options = {
 //   cb();
 // })
 
-parser = csv({ columns: true });
+parser = csv({objectMode: true});
 
 parser.on('data', function (line) {
-  line = line.toString();
+  rowCount++;
+  console.log(rowCount);
+  //line = line.toString();
 
-  console.log(line);
+  line.forEach(function(item, i) {
+    line[i] = item.replace(/(\d{4}\-\d\d\-\d\d[tT][\d:\.]*)/g, function(match) {
+      var newTime = shiftTime(match);
+      return shiftTime(match);
+    });
+  }); 
+  
 
-  line = line.replace(/(\d{4}\-\d\d\-\d\d[tT][\d:\.]*)/g, function(match) {
-    var newTime = shiftTime(match);
-    return shiftTime(match);
-  });
-
-  line += '\n';
 
 
-  outputFile.write(line);
+  // line = line.replace(/(\d{4}\-\d\d\-\d\d[tT][\d:\.]*)/g, function(match) {
+  //   var newTime = shiftTime(match);
+  //   return shiftTime(match);
+  // });
+
+  outputFile.write(line.join() + '\n');
+
+
+
 
 
 });
