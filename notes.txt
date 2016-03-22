@@ -1,0 +1,1 @@
+curl "https://data.cityofnewyork.us/resource/fhrw-4uyv.csv?\$LIMIT=1000&\$ORDER=created_date%20DESC" >> raw.csv

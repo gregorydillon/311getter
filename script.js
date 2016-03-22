@@ -1,27 +1,18 @@
-var moment = require('moment')
-  , Mustache = require('mustache')
-  , request = require('request')
+var Mustache = require('mustache')
+  , moment = require('moment')
   , fs = require('fs')
-  , split2 = require('split2')
-  , through2 = require('through2')
   , nodemailer = require('nodemailer')
   , csv = require('csv-streamify')
   ;
 
-require('request-debug')(request);
 require('dotenv').load();
 
-//Socrata seems to not cooperate when I set this to 1000000
-var sourceLimit = 600000;
-
-var days = process.argv[2]
-  , savePath = process.argv[3];
-
-var outputFile = fs.createWriteStream(savePath);
+var readPath = process.argv[2];
+var writePath = process.argv[3];
 
 var rowCount = 0;
 
-//prepare to send an email alert
+//configure email alert
 var transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
@@ -30,53 +21,15 @@ var transporter = nodemailer.createTransport({
     }
 });
 
+readFile = fs.createReadStream(readPath);
+writeFile = fs.createWriteStream(writePath);
 
-
-//get the date from 90 days ago
-var pastDate = moment().subtract(days, 'days').format('YYYY-MM-DD')
-
-var sourceTemplate = 'https://data.cityofnewyork.us/resource/fhrw-4uyv.csv?$LIMIT={{sourceLimit}}&$ORDER=created_date%20DESC&$WHERE=created_date>=%27{{pastDate}}%27';
-
-//build a SODA API call... eww
-var sourceURL = Mustache.render( sourceTemplate, { 
-  sourceLimit: sourceLimit,
-  pastDate: pastDate 
-});
-
-console.log('Downloading {{days}} of 311 data from {{sourceURL}}', {
-  days: days,
-  sourceURL: sourceURL
-});
-
-var options = {
-  url: sourceURL
-}
-
-// //transform function, finds all timestamps and converts them to GMT
-// var transform = through2({objectMode: true}, function(chunk, encoding, cb) {
-//   rowCount++;
-
-//   chunk = chunk.toString();
-
-//   chunk = chunk.replace(/(\d{4}\-\d\d\-\d\d[tT][\d:\.]*)/g, function(match) {
-//     var newTime = shiftTime(match);
-//     return shiftTime(match);
-//   });
-
-//   //re-add the newline character
-//   chunk += '\n';
-
-//   this.push(chunk)
-
-//   cb();
-// })
 
 parser = csv({objectMode: true});
 
 parser.on('data', function (line) {
   rowCount++;
-  console.log(rowCount);
-  //line = line.toString();
+  process.stdout.write('Rows: ' + rowCount + '\r');
 
   line.forEach(function(item, i) {
     line[i] = item.replace(/(\d{4}\-\d\d\-\d\d[tT][\d:\.]*)/g, function(match) {
@@ -84,54 +37,12 @@ parser.on('data', function (line) {
       return shiftTime(match);
     });
   }); 
-  
 
-
-
-  // line = line.replace(/(\d{4}\-\d\d\-\d\d[tT][\d:\.]*)/g, function(match) {
-  //   var newTime = shiftTime(match);
-  //   return shiftTime(match);
-  // });
-
-  outputFile.write(line.join() + '\n');
-
-
-
-
-
+  writeFile.write(line.join() + '\n');
 });
 
-
-var options = {
-  url: sourceURL,
-  headers: {
-    'Accept': '*/*',
-    'User-Agent': 'curl/7.43.0'
-  }
-}
-
-//GET the API call and pipe it to the response
-request.get(options)
-  // .on('response', function(response) {
-  //   console.log(response.statusCode);
-  //   console.log(response.headers);
-  // })
-  // .on('end', function() {
-  //   console.log('Done-zo, sending an email');
-  //   sendNotification(
-  //     Mustache.render('The 311 script ran, saved {{rowCount}} rows to {{savePath}}', {
-  //       rowCount: rowCount,
-  //       savePath: savePath
-  //     })
-  //   )
-  // })
-      .on('error', function(err) {
-        console.log(err);
-      })
-  // .pipe(split2(), {end: false})
-  // .pipe(transform)
-   .pipe(fs.createWriteStream(savePath))
-  //.pipe(parser)
+//go!
+readFile.pipe(parser)
 
 
 //shift time to GMT
@@ -143,6 +54,7 @@ function shiftTime(timestamp) {
   return timestamp;
 }
 
+//sends an email
 function sendNotification(message) {
   // setup e-mail data with unicode symbols 
 
