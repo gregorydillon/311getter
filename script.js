@@ -3,6 +3,7 @@ var Mustache = require('mustache')
   , fs = require('fs')
   , nodemailer = require('nodemailer')
   , csv = require('csv-streamify')
+  , LineByLineReader = require('line-by-line')
   ;
 
 require('dotenv').load();
@@ -21,28 +22,23 @@ var transporter = nodemailer.createTransport({
     }
 });
 
-readFile = fs.createReadStream(readPath);
+lr = new LineByLineReader(readPath);
 writeFile = fs.createWriteStream(writePath);
 
+lr.on('line', function(line) {
+  lr.pause();
 
-parser = csv({objectMode: true});
-
-parser.on('data', function (line) {
   rowCount++;
   process.stdout.write('Rows: ' + rowCount + '\r');
 
-  line.forEach(function(item, i) {
-    line[i] = item.replace(/(\d{4}\-\d\d\-\d\d[tT][\d:\.]*)/g, function(match) {
-      var newTime = shiftTime(match);
-      return shiftTime(match);
-    });
-  }); 
+  line = line.replace(/(\d{4}\-\d\d\-\d\d[tT][\d:\.]*)/g, function(match) {
+    var newTime = shiftTime(match);
+    return shiftTime(match);
+  });
 
-  writeFile.write(line.join() + '\n');
-});
-
-//go!
-readFile.pipe(parser)
+  writeFile.write(line + '\n');
+  lr.resume();
+})
 
 
 //shift time to GMT
