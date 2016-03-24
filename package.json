@@ -3,21 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "script.js",
-  "dependencies": {
-    "body-parser": "^1.15.0",
-    "csv-streamify": "^3.0.3",
-    "dotenv": "^2.0.0",
-    "express": "^4.13.4",
-    "line-by-line": "^0.1.4",
-    "moment": "^2.12.0",
-    "mustache": "^2.2.1",
-    "nodemailer": "^2.3.0",
-    "request": "^2.69.0",
-    "request-debug": "^0.2.0",
-    "split2": "^2.0.1",
-    "through2": "^2.0.1"
-  },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -30,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/chriswhong/311getter/issues"
   },
-  "homepage": "https://github.com/chriswhong/311getter#readme"
+  "homepage": "https://github.com/chriswhong/311getter#readme",
+  "dependencies": {
+    "fs": "0.0.2",
+    "line-by-line": "^0.1.4",
+    "moment": "^2.12.0",
+    "mustache": "^2.2.1",
+    "nodemailer": "^2.3.0"
+  }
 }
