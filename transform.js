@@ -49,7 +49,7 @@ lr.on('end', function () {
 //TODO: check for daylight savings and offset 5 or 4 hours accordingly
 function shiftTime(timestamp) {
   if(timestamp.length > 0 ) {
-    timestamp = moment(timestamp).add(5,'hours').format();
+    timestamp = moment(timestamp).add(8,'hours').format();
   }
 
   return timestamp;
