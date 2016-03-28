@@ -1,3 +1,3 @@
-curl "https://data.cityofnewyork.us/resource/fhrw-4uyv.csv?\$LIMIT=10000000&\$ORDER=created_date%20DESC" | head -n 600000 > /home/static/sites/311.lolspec.com/raw.csv
+curl "https://data.sfgov.org/resource/p8zf-gnjt.csv?\$LIMIT=10000000&\$ORDER=created_date%20DESC" | head -n 60000 > raw.csv
 
-node transform.js /home/static/sites/311.lolspec.com/raw.csv /home/static/sites/311.lolspec.com/cleaned.csv
+node transform.js raw.csv cleaned.csv
