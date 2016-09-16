@@ -6,6 +6,10 @@ This set of scripts was built to facilitate ETL for the [NYC 311 Data Downloader
 
 ##script.sh
 
+I'm trying to cut n paste coding Chris Whong 311getter for NYC, to work for San Francisco
+It seems SF doesn't use the same $LIMIT and $ORDER as new york
+
+
 This shell script executes a CURL command to download the latest 600,000 rows of data from the NYC Open Data Portal using the API, saving it to a local directory on lolspec.com (digitalocean).  
 
 ```
