@@ -1,0 +1,15 @@
+
+wget -xbimediaURLs.txt
+
+
+ cat *.jpg | ffmpeg -f image2pipe -r 1 -vcodec mjpeg -i - -vcodec libx264 out.mp4
+wget | ffmpeg -f image2pipe -r 1 -vcodec mjpeg -i - -vcodec libx264 out.mp4
+| ffmpeg -f image2pipe -r 1 -vcodec mjpeg -i - -vcodec libx264 out.mp4
+$ xargs -n 1 curl -O < tail.txt
+
+xargs -n 1 curl -O < tail.txt | ffmpeg -f image2pipe -r 1 -vcodec mjpeg -i - -vcodec libx264 out.mp4
+didn't work
+
+xargs -n 1 wget < tail.txt | ffmpeg -f image2pipe -r 1 -vcodec mjpeg -i - -vcodec libx264 out.mp4
+
+

@@ -1,3 +1,4 @@
-curl "https://data.cityofnewyork.us/resource/fhrw-4uyv.csv?\$LIMIT=10000000&\$ORDER=created_date%20DESC" | head -n 600000 > /home/static/sites/311.lolspec.com/raw.csv
+wget -O reports.json "http://data.sfgov.org/resource/qer8-n8u9.json"
+#  curl  "http://data.sfgov.org/resource/qer8-n8u9.csv" | head -n 100 > /home/gdillon/311getter/reports.csv
 
-node transform.js /home/static/sites/311.lolspec.com/raw.csv /home/static/sites/311.lolspec.com/cleaned.csv
+#   node transform.js /home/gdillon/sf311/csv/raw.csv /home/gdillon/sf311/csv/cleaned.csv
