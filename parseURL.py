@@ -28,7 +28,7 @@ with open('reports.json') as f:
         else:
             # print (data[index]["media_url"]["url"])
             imageList.append(data[index]["media_url"]["url"])
-with open("mediaURls.txt","w") as file:
+with open("mediaURLs.txt","w") as file:
     for mediaUrl in imageList:
         file.write(mediaUrl+'\n')
 
