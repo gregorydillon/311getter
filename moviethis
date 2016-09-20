@@ -13,7 +13,6 @@ find . -iname \*.jpg -exec convert -verbose -quality 80 -resize 800x600 "{}" "FO
 
 convert -verbose -quality 80 -resize 400x300 img%03d.jpg
 
-vconv -framerate 1 -i %04d.jpg video.webm
 
  cat *.jpg | ffmpeg -f image2pipe -r 1 -vcodec mjpeg -i - -vcodec libx264 out.mp4
 wget | ffmpeg -f image2pipe -r 1 -vcodec mjpeg -i - -vcodec libx264 out.mp4
@@ -25,4 +24,4 @@ didn't work
 
 xargs -n 1 wget < tail.txt | ffmpeg -f image2pipe -r 1 -vcodec mjpeg -i - -vcodec libx264 out.mp4
 
-
+avconv -framerate 4 -i myStreetView%02d.jpg video2.webm
